@@ -163,7 +163,34 @@ const startServer = async () => {
   });
 
   app.use(mongoSanitize());
-  app.use(cors());
+
+  // Configure CORS for separate frontend/backend deployment
+  const corsAllowedOrigins = process.env.CORS_ALLOWED_ORIGINS
+    ? process.env.CORS_ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+    : [];
+  
+  const corsOptions = {
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) {
+        return callback(null, true);
+      }
+      // Allow all origins if CORS_ALLOWED_ORIGINS is not set (same-origin deployment)
+      if (corsAllowedOrigins.length === 0) {
+        return callback(null, true);
+      }
+      // Check if origin is in the allowed list
+      if (corsAllowedOrigins.includes(origin) || corsAllowedOrigins.includes('*')) {
+        return callback(null, true);
+      }
+      callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true, // Allow cookies to be sent with requests
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  };
+
+  app.use(cors(corsOptions));
   app.use(cookieParser());
 
   if (!isEnabled(DISABLE_COMPRESSION)) {

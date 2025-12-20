@@ -3,7 +3,30 @@ import * as q from './types/queries';
 import { ResourceType } from './accessPermissions';
 
 let BASE_URL = '';
-if (
+
+// Helper function to safely get Vite environment variable
+const getViteApiBaseUrl = (): string => {
+  try {
+    // This will be replaced by Vite at build time if VITE_API_BASE_URL is set
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - import.meta.env is injected by Vite at build time
+    if (typeof globalThis !== 'undefined' && globalThis.__VITE_API_BASE_URL__) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      return globalThis.__VITE_API_BASE_URL__;
+    }
+  } catch {
+    // Ignore errors in non-Vite environments
+  }
+  return '';
+};
+
+const envApiBaseUrl = getViteApiBaseUrl();
+
+if (envApiBaseUrl) {
+  // Use environment variable if set (for separate backend/frontend deployment)
+  BASE_URL = envApiBaseUrl;
+} else if (
   typeof process === 'undefined' ||
   (process as typeof process & { browser?: boolean }).browser === true
 ) {
@@ -17,6 +40,11 @@ if (
 if (BASE_URL && BASE_URL.endsWith('/')) {
   BASE_URL = BASE_URL.slice(0, -1);
 }
+
+// Function to set BASE_URL from outside (useful for runtime configuration)
+export const setApiBaseUrl = (url: string) => {
+  BASE_URL = url.endsWith('/') ? url.slice(0, -1) : url;
+};
 
 export const apiBaseUrl = () => BASE_URL;
 

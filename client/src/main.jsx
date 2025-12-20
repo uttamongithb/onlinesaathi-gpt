@@ -1,4 +1,6 @@
 import 'regenerator-runtime/runtime';
+// Initialize API configuration first (before any API calls)
+import './config/apiConfig';
 import { createRoot } from 'react-dom/client';
 import './locales/i18n';
 import App from './App';

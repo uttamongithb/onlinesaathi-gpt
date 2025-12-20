@@ -1,43 +1,100 @@
-# Deploying LibreChat to Vercel (Frontend + Backend)
+# Deploying OnlineSaathi-GPT to Vercel (Single Service)
 
-This repo now includes a serverless wrapper and a `vercel.json` so you can host **both** the frontend (Vite `client`) and the backend (Express API) on Vercel.
+This repo is configured to deploy **both** the frontend (Vite client) and backend (Express API) as a **single Vercel service**.
 
-## What I added ✅
-- `api/[...slug].js` — single catch-all Vercel Serverless Function that forwards requests to an Express app
-- `api/server/vercel-app.js` — a lightweight `createApp()` initializer for serverless usage (no `app.listen()`)
-- `vercel.json` — build rules & routes mapping
-- Added dependency: `serverless-http` in root `package.json`
+## Architecture
+- **Frontend**: Static SPA built from `/client` → served from `client/dist`
+- **Backend**: Serverless function at `api/[...slug].js` → handles all `/api/*`, `/oauth/*`, `/images/*`, `/health` routes
 
-## Before you deploy — required environment variables
-Set the following **Environment Variables** in the Vercel dashboard (Project Settings → Environment Variables):
+## Files Structure
+- `api/[...slug].js` — Catch-all Vercel Serverless Function
+- `api/server/vercel-app.js` — Lightweight Express app initializer for serverless
+- `vercel.json` — Build configuration & routing rules
 
-- `MONGO_URI` (required)
-- `CREDS_KEY` (required)
-- `CREDS_IV` (required)
-- `JWT_SECRET` and `JWT_REFRESH_SECRET` (required for auth)
-- `OPENAI_API_KEY` or other AI provider keys (if using chat features)
-- `MEILI_HOST` and `MEILI_MASTER_KEY` if `SEARCH=true`
-- Any other envs from your `.env` used in runtime
+## Required Environment Variables
 
-**Security tip:** Use Vercel secrets (Environment Variables) or integrate **Azure Key Vault** / secret provider for production.
+Set these in **Vercel Dashboard** → Project Settings → Environment Variables:
 
-## How it works
-- Frontend (`/client`) is built as a static site (Vercel `@vercel/static-build`) and served from `/client/dist`
-- Backend requests under `/api/*` are routed to the serverless entry `api/[...slug].js`, which lazy-initializes an Express app using `api/server/vercel-app.js`
+### Required
+| Variable | Description |
+|----------|-------------|
+| `MONGO_URI` | MongoDB connection string |
+| `CREDS_KEY` | Encryption key for credentials |
+| `CREDS_IV` | Encryption IV for credentials |
+| `JWT_SECRET` | JWT signing secret |
+| `JWT_REFRESH_SECRET` | JWT refresh token secret |
 
-## Local testing
-- You can still run backend locally with `npm run backend` (it starts a full server)
-- To run the serverless behaviour locally, install the Vercel CLI and run:
-  - `npm i -g vercel`
-  - `vercel dev`
+### Optional (AI Providers)
+| Variable | Description |
+|----------|-------------|
+| `OPENAI_API_KEY` | OpenAI API key |
+| `ANTHROPIC_API_KEY` | Anthropic API key |
+| `GOOGLE_API_KEY` | Google AI API key |
 
-## Notes and caveats
-- Some background/cluster features (the `cluster` multi-worker mode) and long-running tasks are not applicable in serverless; the wrapper uses a lightweight initialization path.
-- Cold starts may occur — connections are cached across warm invocations (DB uses cached global connection), but expect occasional initialization overhead.
-- Static SPA fallback is not served by the serverless functions — the static build serves the frontend.
+### Optional (Search)
+| Variable | Description |
+|----------|-------------|
+| `SEARCH` | Enable search (`true`/`false`) |
+| `MEILI_HOST` | MeiliSearch host URL |
+| `MEILI_MASTER_KEY` | MeiliSearch master key |
 
-If you want, I can:
-1. Create a short GitHub Actions workflow or README snippet to automate the Vercel GitHub Integration steps, or
-2. Help you set environment variables on your Vercel project and run the first deployment.
+## Deploy Steps
 
-Tell me which next step you want me to do. — GitHub Copilot
+### Option 1: Vercel Dashboard (Recommended)
+1. Go to [vercel.com](https://vercel.com) and import your GitHub repository
+2. Configure environment variables in Project Settings
+3. Deploy!
+
+### Option 2: Vercel CLI
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Login to Vercel
+vercel login
+
+# Deploy (follow prompts)
+vercel
+
+# Deploy to production
+vercel --prod
+```
+
+## Local Testing
+
+### Standard Development
+```bash
+npm run dev
+```
+
+### Serverless Testing
+```bash
+npm i -g vercel
+vercel dev
+```
+
+## Limitations & Notes
+
+1. **Cold Starts**: First request after idle may be slower (~2-5s)
+2. **No WebSockets**: Streaming uses Server-Sent Events (SSE) instead
+3. **60s Timeout**: Serverless functions have max 60s execution time
+4. **1GB Memory**: Functions run with 1GB memory limit
+5. **No Cluster Mode**: Multi-worker clustering not available in serverless
+
+## Troubleshooting
+
+### Function Timeout
+Long AI responses may timeout. Consider:
+- Using streaming responses
+- Implementing response chunking
+- Setting `maxDuration: 60` in `vercel.json` (Pro plan supports up to 300s)
+
+### Database Connection
+MongoDB connections are cached between warm invocations to minimize connection overhead.
+
+### Build Failures
+Ensure all packages build correctly:
+```bash
+npm run build:packages
+cd client && npm run build
+```

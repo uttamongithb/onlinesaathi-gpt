@@ -4,7 +4,17 @@
   "outputDirectory": "client/dist",
   "installCommand": "npm install",
   "framework": null,
+  "functions": {
+    "api/[...slug].js": {
+      "maxDuration": 60,
+      "memory": 1024
+    }
+  },
   "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/oauth/:path*", "destination": "/api/oauth/:path*" },
+    { "source": "/images/:path*", "destination": "/api/images/:path*" },
+    { "source": "/health", "destination": "/api/health" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
