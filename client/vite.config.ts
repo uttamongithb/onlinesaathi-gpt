@@ -2,21 +2,25 @@ import react from '@vitejs/plugin-react';
 // @ts-ignore
 import path from 'path';
 import type { Plugin } from 'vite';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { compression } from 'vite-plugin-compression2';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
-const backendPort = process.env.BACKEND_PORT && Number(process.env.BACKEND_PORT) || 3080;
-const backendURL = process.env.HOST ? `http://${process.env.HOST}:${backendPort}` : `http://localhost:${backendPort}`;
-
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ command, mode }) => {
+  // Load env from current directory (client/.env)
+  const env = loadEnv(mode, process.cwd(), '');
+  
+  const backendPort = env.BACKEND_PORT ? Number(env.BACKEND_PORT) : 3080;
+  const backendURL = env.HOST ? `http://${env.HOST}:${backendPort}` : `http://localhost:${backendPort}`;
+  
+  return {
   base: '',
   server: {
-    allowedHosts: process.env.VITE_ALLOWED_HOSTS && process.env.VITE_ALLOWED_HOSTS.split(',') || [],
-    host: process.env.HOST || 'localhost',
-    port: process.env.PORT && Number(process.env.PORT) || 3090,
+    allowedHosts: env.VITE_ALLOWED_HOSTS ? env.VITE_ALLOWED_HOSTS.split(',') : [],
+    host: env.HOST || 'localhost',
+    port: env.PORT ? Number(env.PORT) : 3090,
     strictPort: false,
     proxy: {
       '/api': {
@@ -30,7 +34,7 @@ export default defineConfig(({ command }) => ({
     },
   },
   // Set the directory where environment variables are loaded from and restrict prefixes
-  envDir: '../',
+  envDir: './',
   envPrefix: ['VITE_', 'SCRIPT_', 'DOMAIN_', 'ALLOW_'],
   plugins: [
     react(),
@@ -260,7 +264,7 @@ export default defineConfig(({ command }) => ({
       'micromark-extension-math': 'micromark-extension-llm-math',
     },
   },
-}));
+}});
 
 interface SourcemapExclude {
   excludeNodeModules?: boolean;

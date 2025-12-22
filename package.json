@@ -33,8 +33,9 @@
   },
   "homepage": "https://onlinesaathi.com/",
   "dependencies": {
-    "serverless-http": "^3.0.0",
-    "concurrently": "^9.0.0"
+    "@smithy/node-http-handler": "^4.4.7",
+    "concurrently": "^9.0.0",
+    "serverless-http": "^3.0.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.0",

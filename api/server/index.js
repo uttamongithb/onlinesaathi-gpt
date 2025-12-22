@@ -35,9 +35,9 @@ if (typeof File === 'undefined') {
   };
 }
 
-require('dotenv').config();
-const fs = require('fs');
 const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+const fs = require('fs');
 require('module-alias')({ base: path.resolve(__dirname, '..') });
 const cors = require('cors');
 const axios = require('axios');
@@ -83,7 +83,8 @@ const startServer = async () => {
   }
   await connectDb();
 
-  logger.info('Connected to MongoDB');
+  logger.info('✅ Connected to MongoDB');
+  logger.info('🚀 Online Saathi Backend starting...');
   indexSync().catch((err) => {
     logger.error('[indexSync] Background sync failed:', err);
   });
@@ -272,6 +273,16 @@ const startServer = async () => {
       logger.error('Failed to start server:', err);
       process.exit(1);
     }
+
+    console.log('\n');
+    console.log('╔═══════════════════════════════════════════════════════════╗');
+    console.log('║                                                           ║');
+    console.log('║   🎉 Online Saathi Backend Run Successful!                ║');
+    console.log('║                                                           ║');
+    console.log(`║   🌐 Server URL: http://${host == '0.0.0.0' ? 'localhost' : host}:${port}                       ║`);
+    console.log('║                                                           ║');
+    console.log('╚═══════════════════════════════════════════════════════════╝');
+    console.log('\n');
 
     if (host === '0.0.0.0') {
       logger.info(
