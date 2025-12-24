@@ -1,16 +1,24 @@
-# Render.com deployment configuration
+# =====================================================================
+# Render.com Deployment Configuration
+# Online Saathi - Frontend + Backend एकसाथ (Docker Based)
+# =====================================================================
+
 services:
+  # ===========================================
+  # Main Application (Frontend + Backend)
+  # ===========================================
   - type: web
-    name: onlinesaathi-backend
-    env: node
+    name: onlinesaathi
+    runtime: docker
+    dockerfilePath: ./Dockerfile
     region: oregon
-    plan: free
-    buildCommand: npm install && npm run build:packages
-    startCommand: node api/server/index.js
+    plan: starter  # Use 'free' for hobby projects
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
+      - key: HOST
+        value: 0.0.0.0
       - key: PORT
         value: 3080
       - key: MONGO_URI
@@ -25,3 +33,25 @@ services:
         sync: false
       - key: OPENAI_API_KEY
         sync: false
+      - key: GOOGLE_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: HUGGINGFACE_TOKEN
+        sync: false
+      - key: ALLOW_REGISTRATION
+        value: "true"
+      - key: ALLOW_UNVERIFIED_EMAIL_LOGIN
+        value: "true"
+
+  # ===========================================
+  # MongoDB Database (Optional - Use MongoDB Atlas instead for production)
+  # ===========================================
+  # - type: pserv
+  #   name: onlinesaathi-mongodb
+  #   runtime: docker
+  #   dockerImage: mongo:7.0
+  #   disk:
+  #     name: mongodb-data
+  #     mountPath: /data/db
+  #     sizeGB: 10
