@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Online Saathi Backend API",
   "scripts": {
-    "start": "node server/index.js",
+    "start": "node --max-old-space-size=512 server/index.js",
     "dev": "cross-env NODE_ENV=development nodemon server/index.js",
     "build:packages": "npm run build --prefix packages/data-schemas && npm run build --prefix packages/data-provider && npm run build --prefix packages/librechat-api",
     "build": "npm install && cd packages/data-schemas && npm install && npm run build && cd ../data-provider && npm install && npm run build && cd ../librechat-api && npm install && npm run build"
