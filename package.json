@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "cd api && npm start",
-    "build": "cd api && npm install",
+    "build": "cd api && npm run build",
     "install:api": "cd api && npm install",
     "install:client": "cd client && npm install",
     "install:all": "npm run install:api && npm run install:client",
