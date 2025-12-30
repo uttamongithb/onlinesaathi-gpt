@@ -68,7 +68,10 @@ const cjsBuild = {
      */
     sourcemapExcludeSources: false,
   },
-  external: [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.devDependencies || {})],
+  external: [
+    ...Object.keys(pkg.dependencies || {}),
+    ...Object.keys(pkg.devDependencies || {}),
+  ].filter(dep => !dep.startsWith('@librechat/')),
   preserveSymlinks: true,
   plugins,
 };
