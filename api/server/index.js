@@ -144,6 +144,180 @@ const startServer = async () => {
 
   app.get('/health', (_req, res) => res.status(200).send('OK'));
 
+  // Root route - shows beautiful success page in browser
+  app.get('/api/status', (_req, res) => {
+    const uptime = process.uptime();
+    const hours = Math.floor(uptime / 3600);
+    const minutes = Math.floor((uptime % 3600) / 60);
+    const seconds = Math.floor(uptime % 60);
+    
+    res.send(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Saathi - Backend Status</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px 50px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+      max-width: 500px;
+      animation: fadeIn 0.5s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 20px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .success-icon svg {
+      width: 40px;
+      height: 40px;
+      fill: white;
+    }
+    h1 {
+      color: #2d3748;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .status {
+      color: #38a169;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 25px;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .info-box {
+      background: #f7fafc;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+    }
+    .info-box label {
+      display: block;
+      color: #718096;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .info-box span {
+      color: #2d3748;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .endpoints {
+      background: #f7fafc;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: left;
+    }
+    .endpoints h3 {
+      color: #4a5568;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .endpoints ul {
+      list-style: none;
+    }
+    .endpoints li {
+      padding: 8px 0;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 14px;
+    }
+    .endpoints li:last-child { border-bottom: none; }
+    .endpoints code {
+      background: #edf2f7;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #667eea;
+    }
+    .footer {
+      margin-top: 20px;
+      color: #a0aec0;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+    </div>
+    <h1>🚀 Online Saathi</h1>
+    <p class="status">✅ Backend Running Successfully!</p>
+    
+    <div class="info-grid">
+      <div class="info-box">
+        <label>Status</label>
+        <span style="color: #38a169;">● Online</span>
+      </div>
+      <div class="info-box">
+        <label>Uptime</label>
+        <span>${hours}h ${minutes}m ${seconds}s</span>
+      </div>
+      <div class="info-box">
+        <label>Port</label>
+        <span>${port}</span>
+      </div>
+      <div class="info-box">
+        <label>Environment</label>
+        <span>${process.env.NODE_ENV || 'development'}</span>
+      </div>
+    </div>
+
+    <div class="endpoints">
+      <h3>📡 API Endpoints:</h3>
+      <ul>
+        <li><code>GET /health</code> - Health check</li>
+        <li><code>GET /api/status</code> - This page</li>
+        <li><code>POST /api/auth/login</code> - Login</li>
+        <li><code>POST /api/auth/register</code> - Register</li>
+        <li><code>GET /oauth/google</code> - Google Login</li>
+        <li><code>GET /oauth/github</code> - GitHub Login</li>
+        <li><code>GET /oauth/discord</code> - Discord Login</li>
+      </ul>
+    </div>
+
+    <p class="footer">Online Saathi GPT • ${new Date().toLocaleString()}</p>
+  </div>
+</body>
+</html>
+    `);
+  });
+
   /* Middleware */
   app.use(noIndex);
   app.use(express.json({ limit: '3mb' }));

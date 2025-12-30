@@ -2,29 +2,19 @@
   "name": "online-saathi",
   "version": "1.0.0",
   "description": "Online Saathi - AI Chat Application",
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "workspaces": [
-    "api",
-    "client",
-    "packages/*"
-  ],
+  "private": true,
   "scripts": {
-    "backend": "cross-env NODE_ENV=production node api/server/index.js",
-    "backend:dev": "cross-env NODE_ENV=development npx nodemon api/server/index.js",
+    "install:api": "cd api && npm install",
+    "install:client": "cd client && npm install",
+    "install:all": "npm run install:api && npm run install:client",
+    "backend": "cd api && npm start",
+    "backend:dev": "cd api && npm run dev",
+    "frontend": "cd client && npm run preview",
     "frontend:dev": "cd client && npm run dev",
     "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\" --kill-others",
-    "build:data-provider": "cd packages/data-provider && npm run build",
-    "build:api": "cd packages/api && npm run build",
-    "build:data-schemas": "cd packages/data-schemas && npm run build",
-    "build:client": "cd client && npm run build",
-    "build:client-package": "cd packages/client && npm run build",
-    "build:packages": "npm run build:data-provider && npm run build:data-schemas && npm run build:api && npm run build:client-package",
-    "build": "npm run build:packages && cd client && npm run build",
-    "start": "node api/server/index.js",
-    "start:build": "npm run build:packages && node api/server/index.js",
-    "create-user": "node config/create-user.js"
+    "build:frontend": "cd client && npm run build",
+    "start:backend": "cd api && npm start",
+    "start:frontend": "cd client && npm run preview"
   },
   "repository": {
     "type": "git",
@@ -32,30 +22,7 @@
   },
   "author": "Online Saathi Team",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/thapahemraj/onlinesaathi-gpt/issues"
-  },
-  "homepage": "https://onlinesaathi.com/",
-  "dependencies": {
-    "@smithy/node-http-handler": "^4.4.7",
-    "concurrently": "^9.0.0",
-    "serverless-http": "^3.0.0"
-  },
   "devDependencies": {
-    "concurrently": "^8.2.0",
-    "cross-env": "^7.0.3",
-    "nodemon": "^3.0.0"
-  },
-  "overrides": {
-    "axios": "1.12.1",
-    "form-data": "^4.0.4"
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "api/data/",
-      "data/",
-      "client/",
-      "packages/"
-    ]
+    "concurrently": "^9.0.0"
   }
 }
