@@ -35,16 +35,21 @@ export function safeStringify(obj: unknown, maxLength = 1000): string {
  * @param headers - Headers object to log
  * @returns Stringified headers with sensitive data masked
  */
-export function logHeaders(headers: Headers | undefined | null): string {
+export function logHeaders(headers: Headers | Record<string, string> | undefined | null): string {
   const headerObj: Record<string, string> = {};
-  if (!headers || typeof headers.entries !== 'function') {
+  if (!headers) {
     return 'No headers available';
   }
-  for (const [key, value] of headers.entries()) {
+
+  const entries = typeof (headers as any).entries === 'function'
+    ? (headers as any).entries()
+    : Object.entries(headers as Record<string, string>);
+
+  for (const [key, value] of entries as Iterable<[string, string]>) {
     if (key.toLowerCase() === 'authorization' || key.toLowerCase().includes('secret')) {
       headerObj[key] = '***MASKED***';
     } else {
-      headerObj[key] = value;
+      headerObj[key] = value as string;
     }
   }
   return safeStringify(headerObj);

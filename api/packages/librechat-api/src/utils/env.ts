@@ -48,7 +48,7 @@ export function createSafeUser(
   const safeUser: Partial<SafeUser> & { federatedTokens?: unknown } = {};
   for (const field of ALLOWED_USER_FIELDS) {
     if (field in user) {
-      safeUser[field] = user[field];
+      (safeUser as any)[field] = (user as any)[field];
     }
   }
 

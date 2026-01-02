@@ -1,4 +1,5 @@
-import { logger, encryptV2, decryptV2 } from '@librechat/data-schemas';
+import { logger } from '@librechat/data-schemas';
+import { encryptV2, decryptV2 } from '@librechat/data-schemas/crypto';
 import type { OAuthTokens, OAuthClientInformation } from '@modelcontextprotocol/sdk/shared/auth.js';
 import type { TokenMethods, IToken } from '@librechat/data-schemas';
 import type { MCPOAuthTokens, ExtendedOAuthTokens, OAuthMetadata } from './types';
