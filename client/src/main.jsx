@@ -2,7 +2,8 @@ import 'regenerator-runtime/runtime';
 // Initialize API configuration first (before any API calls)
 import './config/apiConfig';
 import { createRoot } from 'react-dom/client';
-import './locales/i18n';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './locales/i18n';
 import App from './App';
 import './style.css';
 import './mobile.css';
@@ -15,6 +16,8 @@ const root = createRoot(container);
 
 root.render(
   <ApiErrorBoundaryProvider>
-    <App />
+    <I18nextProvider i18n={i18n}>
+      <App />
+    </I18nextProvider>
   </ApiErrorBoundaryProvider>,
 );
