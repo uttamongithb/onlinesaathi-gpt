@@ -108,7 +108,6 @@ export default defineConfig(({ command, mode }) => {
     outDir: './dist',
     minify: 'terser',
     rollupOptions: {
-      external: ['framer-motion', 'react', 'react-dom', 'react-i18next', 'i18next', '@librechat/client'],
       preserveEntrySignatures: 'strict',
       output: {
         manualChunks(id: string) {

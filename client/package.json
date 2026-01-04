@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "cross-env NODE_ENV=production vite build",
+    "build:data-provider": "cd packages/data-provider && npm install && npm run build",
+    "build:librechat-client": "cd packages/librechat-client && npm install && npm run build",
+    "build": "npm run build:data-provider && npm run build:librechat-client && cross-env NODE_ENV=production vite build",
     "dev": "cross-env NODE_ENV=development vite",
     "preview": "cross-env NODE_ENV=development vite preview"
   },
@@ -13,7 +15,12 @@
     "type": "git",
     "url": "git+https://github.com/thapahemraj/onlinesaathi-gpt.git"
   },
-  "keywords": ["ai", "chat", "openai", "nepali"],
+  "keywords": [
+    "ai",
+    "chat",
+    "openai",
+    "nepali"
+  ],
   "author": "Online Saathi Team",
   "license": "MIT",
   "bugs": {
